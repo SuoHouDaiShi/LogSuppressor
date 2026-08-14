@@ -1,4 +1,4 @@
-name: Build Jar with Gradle
+name: Build Jar with Gradle (Java 21)
 
 on:
   push:
@@ -20,16 +20,15 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
-        cache: gradle   # 会自动缓存 ~/.gradle/caches
+        cache: gradle
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
       with:
-        gradle-version: '8.5'   # 指定 Gradle 版本（可根据项目需要调整）
-        # 若想用 wrapper 而你又补齐了文件，则可以不写 gradle-version
+        gradle-version: '8.5'
 
     - name: Build with Gradle
-      run: gradle build   # 注意这里不是 ./gradlew，而是 gradle
+      run: gradle build
 
     - name: Upload Jar artifact
       uses: actions/upload-artifact@v4
