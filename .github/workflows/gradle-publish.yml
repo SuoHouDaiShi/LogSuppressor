@@ -5,16 +5,12 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  # 如果你仍想保留 release 触发，可以取消下面注释
-  # release:
-  #   types: [ created ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read   # 读取代码需要
-      # 不再需要 packages: write，因为不发布
+      contents: read
 
     steps:
     - uses: actions/checkout@v4
@@ -24,19 +20,19 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
-        cache: 'gradle'          # 启用 Gradle 依赖缓存，加速构建
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew     # 关键步骤，避免权限错误
+        cache: gradle   # 会自动缓存 ~/.gradle/caches
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4   # 使用最新稳定版，你也可以保留原来的哈希
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: '8.5'   # 指定 Gradle 版本（可根据项目需要调整）
+        # 若想用 wrapper 而你又补齐了文件，则可以不写 gradle-version
 
-    - name: Build with Gradle (skip tests optional)
-      run: ./gradlew build      # 或者 bootJar / shadowJar，视项目而定
+    - name: Build with Gradle
+      run: gradle build   # 注意这里不是 ./gradlew，而是 gradle
 
-    - name: Upload Jar as artifact
+    - name: Upload Jar artifact
       uses: actions/upload-artifact@v4
       with:
-        name: my-app-jar
-        path: build/libs/*.jar   # Gradle 默认输出目录
+        name: app-jar
+        path: build/libs/*.jar
